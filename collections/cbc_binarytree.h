@@ -35,6 +35,7 @@
 #define CBC_BINARYTREE_ATTRIBUTES CBC_OBJECT_ATTRIBUTES \
 	cbc_var item; \
 	cbc_var empty; \
+	cbc_var count; \
 	struct cbc_BinaryTree_struct* parent; \
 	struct cbc_BinaryTree_struct* left; \
 	struct cbc_BinaryTree_struct* right; \
