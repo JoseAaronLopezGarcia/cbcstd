@@ -95,10 +95,11 @@ cbc_var cbc_BinaryTree___end__(cbc_BinaryTree self){
 }
 
 cbc_var cbc_BinaryTree_insert(cbc_BinaryTree self, cbc_var item){
-	if (self != NULL){
+	for (;;){
 		if (self->empty){
 			self->item = item;
 			self->empty = cbc_false; 
+			break;
 		}
 		else{
 			cbc_BinaryTree_Class cls = self->__getclass__(CBC_BINARYTREE_ID);
@@ -106,6 +107,7 @@ cbc_var cbc_BinaryTree_insert(cbc_BinaryTree self, cbc_var item){
 			if (cmp == 0){
 				self->item = item;
 				self->empty = cbc_false;
+				break;
 			}
 			else if (cmp < 0){
 				if (self->right == NULL){
@@ -113,9 +115,9 @@ cbc_var cbc_BinaryTree_insert(cbc_BinaryTree self, cbc_var item){
 					self->right->item = item;
 					self->right->empty = cbc_false;
 					self->right->parent = self;
+					break;
 				}
-				else
-					cls->insert(self->right, item);
+				else self = self->right;
 			}
 			else{
 				if (self->left == NULL){
@@ -123,13 +125,13 @@ cbc_var cbc_BinaryTree_insert(cbc_BinaryTree self, cbc_var item){
 					self->left->item = item;
 					self->left->empty = cbc_false;
 					self->left->parent = self;
+					break;
 				}
-				else
-					cls->insert(self->left, item);
+				else self = self->left;
 			}
 		}
 	}
-	return cbc_getNone();
+	return item;
 }
 
 cbc_var cbc_BinaryTree_contains(cbc_BinaryTree self, cbc_var id){
@@ -137,19 +139,19 @@ cbc_var cbc_BinaryTree_contains(cbc_BinaryTree self, cbc_var id){
 }
 
 cbc_var cbc_BinaryTree_search(cbc_BinaryTree self, cbc_var id){
-	if (self != NULL && !self->empty){
-		cbc_BinaryTree_Class cls = self->__getclass__(CBC_BINARYTREE_ID);
+	cbc_BinaryTree_Class cls = self->__getclass__(CBC_BINARYTREE_ID);
+	while (self != NULL && !self->empty){
 		ssize_t cmp = self->cmpid(self->item, id);
 		if (cmp == 0) return self->item;
-		else if (cmp < 0) return cls->search(self->right, id);
-		else return cls->search(self->left, id);
+		else if (cmp < 0) self = self->right;
+		else self = self->left;
 	}
 	return cbc_getNone();
 }
 
 cbc_var cbc_BinaryTree_remove(cbc_BinaryTree self, cbc_var id){
-	if (self != NULL && !self->empty){
-		cbc_BinaryTree_Class cls = self->__getclass__(CBC_BINARYTREE_ID);
+	cbc_BinaryTree_Class cls = self->__getclass__(CBC_BINARYTREE_ID);
+	while (self != NULL && !self->empty){
 		ssize_t cmp = self->cmpid(self->item, id);
 		if (cmp == 0){
 			cbc_var ret = self->item;
@@ -195,10 +197,10 @@ cbc_var cbc_BinaryTree_remove(cbc_BinaryTree self, cbc_var id){
 			return ret;
 		}
 		else if (cmp < 0){
-			cbc_var ret = cls->remove(self->right, id);
+			self = self->right;
 		}
 		else{
-			cbc_var ret = cls->remove(self->left, id);
+			self = self->left;
 		}
 	}
 	return cbc_getNone();
