@@ -83,7 +83,6 @@ cbc_var cbc_BinaryTree___usrinit__(cbc_BinaryTree self, ssize_t (*cmpitem)(cbc_v
 	self->item = self->left = self->right = self->parent = self->count = 0;
 	self->cmpitem = cmpitem;
 	self->cmpid = cmpid;
-	self->empty = cbc_true;
 }
 
 cbc_var cbc_BinaryTree___end__(cbc_BinaryTree self){
@@ -99,23 +98,21 @@ cbc_var cbc_BinaryTree_insert(cbc_BinaryTree self, cbc_var item){
 	ssize_t (*cmpitem)(cbc_var, cbc_var) = self->cmpitem;
 	for (;;){
 		self->count++;
-		if (self->empty){
+		if (self->count == 1){
 			self->item = item;
-			self->empty = cbc_false; 
 			break;
 		}
 		else{
 			ssize_t cmp = cmpitem(self->item, item);
 			if (cmp == 0){
 				self->item = item;
-				self->empty = cbc_false;
 				break;
 			}
 			else if (cmp < 0){
 				if (self->right == NULL){
 					self->right = cbc_BinaryTree___new__(cmpitem, cmpid);
 					self->right->item = item;
-					self->right->empty = cbc_false;
+					self->right->count = 1;
 					self->right->parent = self;
 					break;
 				}
@@ -125,7 +122,7 @@ cbc_var cbc_BinaryTree_insert(cbc_BinaryTree self, cbc_var item){
 				if (self->left == NULL){
 					self->left = cbc_BinaryTree___new__(cmpitem, cmpid);
 					self->left->item = item;
-					self->left->empty = cbc_false;
+					self->left->count = 1;
 					self->left->parent = self;
 					break;
 				}
@@ -142,7 +139,7 @@ cbc_var cbc_BinaryTree_contains(cbc_BinaryTree self, cbc_var id){
 
 cbc_var cbc_BinaryTree_search(cbc_BinaryTree self, cbc_var id){
 	ssize_t (*cmpid)(cbc_var, cbc_var) = self->cmpid;
-	while (self != NULL && !self->empty){
+	while (self != NULL && self->count > 0){
 		ssize_t cmp = cmpid(self->item, id);
 		if (cmp == 0) return self->item;
 		else if (cmp < 0) self = self->right;
@@ -153,7 +150,7 @@ cbc_var cbc_BinaryTree_search(cbc_BinaryTree self, cbc_var id){
 
 cbc_var cbc_BinaryTree_remove(cbc_BinaryTree self, cbc_var id){
 	ssize_t (*cmpid)(cbc_var, cbc_var) = self->cmpid;	
-	while (self != NULL && !self->empty){
+	while (self != NULL && self->count > 0){
 		self->count--;
 		ssize_t cmp = cmpid(self->item, id);
 		if (cmp == 0){

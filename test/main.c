@@ -74,7 +74,7 @@ ssize_t intcmp(cbc_var int1, cbc_var int2){
 
 void _printTree(cbc_BinaryTree tree){
 	CBC_STACK_TRACE
-	if (tree != NULL && !tree->empty){
+	if (tree != NULL && tree->count > 0){
 		_printTree(tree->left);
 		printf("%d, ", tree->item);
 		_printTree(tree->right);

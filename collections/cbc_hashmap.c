@@ -44,7 +44,7 @@ static ssize_t _cmpNodeHash(cbc_var node, cbc_var hash2){
 }
 
 static void _cbc_HashMap_distributeTree(cbc_HashMap self, cbc_BinaryTree tree){
-	if (tree != NULL && !tree->empty){
+	if (tree != NULL && tree->count > 0){
 		_cbc_HashMap_distributeTree(self, tree->left);
 		_cbc_HashMap_distributeTree(self, tree->right);
 		_MapNode node = tree->item;
