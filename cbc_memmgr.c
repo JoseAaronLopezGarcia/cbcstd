@@ -51,7 +51,6 @@ static cbc_var _findMemChunk(size_t size){
 			// free memory
 			__cbc_mem_chunk__[MAX_MEM_CHUNKS-1].ptr = 0;
 			__cbc_mem_chunk__[MAX_MEM_CHUNKS-1].size = 0;
-			cbc_Mutex_unlock(memmgr_mutex);
 			return ptr;
 		}
 	}
@@ -76,40 +75,46 @@ static cbc_var _addMemChunk(cbc_var ptr){
 
 cbc_var cbc_alloc(cbc_var size){
 
+	return malloc(size);
+
 	if (size == 0)
 		return 0;
-
-	if (!_cbc_memmgr_started)
-		return (cbc_var)malloc((size_t)size); // forward to basic malloc
-
-	cbc_Mutex_lock(memmgr_mutex);
-
+	cbc_var ret = 0;
 	if (!_cbc_memmgr_started){
-		cbc_Mutex_unlock(memmgr_mutex);
-		return (cbc_var)malloc((size_t)size); // forward to basic malloc
-	}
-	
-	cbc_var ret = _findMemChunk((size_t)size);
-	cbc_Mutex_unlock(memmgr_mutex);
-	if (ret == 0){
-		cbc_var ret = (cbc_var)malloc((size_t)size+sizeof(size_t));
+		ret = (cbc_var)malloc((size_t)size); // forward to basic malloc
 		if (ret == 0){
 			cbc_throw(out_of_mem);
 		}
-		*(size_t*)ret = size;
-		ret = (cbc_var)((size_t)ret + sizeof(size_t));
+		printf("malloc ret: %p\n", ret);
 	}
+	else{
+		cbc_Mutex_lock(memmgr_mutex);
+		ret = _findMemChunk((size_t)size);
+		cbc_Mutex_unlock(memmgr_mutex);
+		if (ret == 0){
+			cbc_var ret = (cbc_var)malloc((size_t)size+sizeof(size_t));
+			if (ret == 0){
+				cbc_throw(out_of_mem);
+			}
+			*(size_t*)ret = size;
+			ret = (cbc_var)((size_t)ret + sizeof(size_t));
+		}
+	}
+	memset(ret, 0, size);
 	return ret;
 }
 
 cbc_var cbc_dealloc(cbc_var ptr){
-	if (ptr && _cbc_memmgr_started){
-		cbc_Mutex_lock(memmgr_mutex);
+	free(ptr);
+	return cbc_getNone();
+	if (ptr){
 		if (!_cbc_memmgr_started)
 			free(ptr);
-		else
+		else{
+			cbc_Mutex_lock(memmgr_mutex);
 			_addMemChunk(ptr);
-		cbc_Mutex_unlock(memmgr_mutex);
+			cbc_Mutex_unlock(memmgr_mutex);
+		}
 	}
 	return cbc_getNone();
 }
@@ -119,7 +124,6 @@ void _cbc_initMemoryMgr(){
 	cbc_OutOfMemoryError___init__(out_of_mem);
 	memmgr_mutex = &_memmgr_mutex;
 	cbc_Mutex___init__(memmgr_mutex);
-	//_cbc_memmgr_started = cbc_true;
 }
 
 cbc_var cbc_startMemoryManager(){

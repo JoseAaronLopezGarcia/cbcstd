@@ -28,7 +28,7 @@
 
 #define CBC_LINKED_LIST_METHODS CBC_LIST_METHODS
 
-#define CBC_LINKED_LIST_ATTRIBUTES CBC_LIST_ATTRIBUTES\
+#define CBC_LINKED_LIST_ATTRIBUTES \
 	void* _first; \
 	void* _last; \
 	size_t _size;

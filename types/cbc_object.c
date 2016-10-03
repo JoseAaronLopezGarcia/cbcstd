@@ -20,25 +20,34 @@
 
 #include <types/cbc_object.h>
 
-extern cbc_var cbc_CastError___new__(cbc_var, cbc_var);
-
 static cbc_var _cbc_NoneObject_type[3] = {
 	CBC_NONE_OBJECT_ID,
 	CBC_OBJECT_ID,
 	NULL
 };
 
-static struct cbc_Object_Class_struct _cbc_Object___class__ = {
+static struct{
+	cbc_Object_Class_struct __class__;
+	cbc_var none;
+} _cbc_Object___ctable__ = {
+	{
 	.__type__ = &_cbc_NoneObject_type[1],
+	.__size__ = sizeof(cbc_Object_Class_struct),
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
 	.__callmethod__ = &cbc_Object___callmethod__,
 	.__end__ = &cbc_Object___end__,
 	.__hash__ = &cbc_Object___hash__,
 	.__cmp__ = &cbc_Object___cmp__,
+	},
+	0
 };
 
-static struct cbc_Object_Class_struct _cbc_NoneObject___class__ = {
+static struct{
+	cbc_Object_Class_struct __class__;
+	cbc_var none;
+} _cbc_NoneObject___ctable__ = {
+	{
 	.__type__ = _cbc_NoneObject_type,
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
@@ -46,6 +55,7 @@ static struct cbc_Object_Class_struct _cbc_NoneObject___class__ = {
 	.__end__ = &cbc_Object___end__,
 	.__hash__ = &cbc_Object___hash__,
 	.__cmp__ = &cbc_Object___cmp__,
+	},0
 };
 
 cbc_var* cbc_Object___type__ = &_cbc_NoneObject_type[1];
@@ -70,17 +80,8 @@ cbc_var cbc_Object___init__(cbc_Object self){
 	return self;
 }
 
-static cbc_var _cbc_Object___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_OBJECT_ID: return &_cbc_Object___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_OBJECT_ID, id)); break;
-	}
-	return NULL;
-}
-
 cbc_var cbc_Object___sysinit__(cbc_Object self){
-	self->__getclass__ = &_cbc_Object___getclass__;
+	self->__ctable__ = &_cbc_Object___ctable__;
 	return self;
 }
 
@@ -112,11 +113,7 @@ cbc_var cbc_Object___cmp__(cbc_Object self, cbc_Object other){
 	return (ssize_t)((size_t)self - (size_t)other);
 }
 
-cbc_var _cbc_NoneObject___getclass__(cbc_var id){
-	return &_cbc_NoneObject___class__;
-}
-
 cbc_var cbc_NoneObject___init__(cbc_NoneObject self){
-	self->__getclass__ = &_cbc_NoneObject___getclass__;
+	self->__ctable__ = &_cbc_NoneObject___ctable__;
 	return self;
 }

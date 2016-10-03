@@ -26,7 +26,11 @@ static cbc_var _cbc_Exception_type[3] = {
 	NULL
 };
 
-static struct cbc_Exception_Class_struct _cbc_Exception___class__ = {
+static struct{
+	cbc_Exception_Class_struct __class__;
+	cbc_var none;
+} _cbc_Exception___ctable__ = {
+	{
 	.__type__ = _cbc_Exception_type,
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
@@ -34,6 +38,7 @@ static struct cbc_Exception_Class_struct _cbc_Exception___class__ = {
 	.__end__ = &cbc_Exception___end__,
 	.__hash__ = &cbc_Object___hash__,
 	.__cmp__ = &cbc_Object___cmp__,
+	}, 0
 };
 
 cbc_var* cbc_Exception___type__ = _cbc_Exception_type;
@@ -58,18 +63,8 @@ cbc_var cbc_Exception___init__(cbc_Exception self, const char* description){
 	return self;
 }
 
-static cbc_var _cbc_Exception___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_EXCEPTION_ID:
-		case CBC_OBJECT_ID: return &_cbc_Exception___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_EXCEPTION_ID, id)); break;
-	}
-	return NULL;
-}
-
 cbc_var cbc_Exception___sysinit__(cbc_Exception self){
-	self->__getclass__ = &_cbc_Exception___getclass__;
+	self->__ctable__ = &_cbc_Exception___ctable__;
 	return self;
 }
 

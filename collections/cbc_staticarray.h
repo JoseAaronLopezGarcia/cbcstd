@@ -30,7 +30,7 @@
 	cbc_var (*checkIndex)(void*, cbc_var index); \
 	cbc_var (*checkSize)(void*);
 
-#define CBC_STATIC_ARRAY_ATTRIBUTES CBC_LIST_ATTRIBUTES\
+#define CBC_STATIC_ARRAY_ATTRIBUTES \
 	cbc_var* _buf; \
 	size_t _size; \
 	size_t _max;

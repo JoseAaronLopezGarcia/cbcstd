@@ -42,29 +42,30 @@ cbc_var cbc_getArgs(){
 
 cbc_var cbc_destroyObject(cbc_var o){
 	if (o != NULL && o != __none__){
-		cbc_Object_Class cls = ((cbc_Object)o)->__getclass__(0);
+		cbc_Object_Class cls = ((cbc_Object)o)->__ctable__;
 		cls->__end__(o);
 		cbc_dealloc(o);
 	}
 	return cbc_getNone();
 }
 
-cbc_bool cbc_isinstanceof(cbc_var o, cbc_var classid){
-	if (o==NULL) return cbc_true;
-	int i=0;
-	cbc_var type = 0;
-	cbc_Object_Class cls = ((cbc_Object)o)->__getclass__(0);
-	do{
-		type = cls->__type__[i];
+cbc_Class cbc_getClassByID(cbc_var o, cbc_var classid){
+	if (o==NULL) return NULL;
+	register int i=0;
+	register cbc_Class cls = ((cbc_Object)o)->__ctable__;
+	if (cls == NULL) return NULL;
+	register cbc_var* __type__ = NULL;
+	while((__type__ = cls->__type__) != NULL){
+		register cbc_var type = 0;
+		do{
+		type = __type__[i];
 		if (type == classid)
-			return cbc_true;
+			return cls;
 		i++;
-	}while (type);
-	return cbc_false;
-}
-
-cbc_bool cbc_istypeof(cbc_var o, cbc_var classid){
-	return (((cbc_Object_Class)(((cbc_Object)o)->__getclass__(0)))->__type__[0] == classid);
+		}while (type);
+		cls = (cbc_Class)((size_t)cls + cls->__size__);
+	}
+	return NULL;
 }
 
 cbc_var cbc_init(int argc, char** argv){

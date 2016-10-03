@@ -45,8 +45,8 @@ typedef struct cbc_Exception_struct{
 typedef cbc_Exception_Class_struct* cbc_Exception_Class;
 typedef cbc_Exception_struct* cbc_Exception;
 
-extern cbc_var* cbc_Object___type__;
-extern cbc_var cbc_Object___size__;
+extern cbc_var* cbc_Exception___type__;
+extern cbc_var cbc_Exception___size__;
 
 extern cbc_Exception cbc_Exception___new__(const char* description);
 extern cbc_var cbc_Exception___init__(cbc_Exception, const char* description);

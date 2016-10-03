@@ -28,14 +28,20 @@ static cbc_var _cbc_Mutex_type[3] = {
 	NULL
 };
 
-static struct cbc_Mutex_Class_struct _cbc_Mutex___class__ = {
+static struct {
+	cbc_Mutex_Class_struct class;
+	cbc_var none;
+} _cbc_Mutex___ctable__ = {
+	{
 	.__type__ = _cbc_Mutex_type,
+	.__size__ = sizeof(cbc_Mutex_Class_struct),
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
 	.__callmethod__ = &cbc_Object___callmethod__,
 	.__end__ = &cbc_Mutex___end__,
 	.lock = &cbc_Mutex_lock,
 	.unlock = &cbc_Mutex_unlock
+	}, 0
 };
 
 cbc_var* cbc_Mutex___type__ = _cbc_Mutex_type;
@@ -60,18 +66,8 @@ cbc_var cbc_Mutex___init__(cbc_Mutex self){
 	return self;
 }
 
-static cbc_var _cbc_Mutex___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_MUTEX_ID:
-		case CBC_OBJECT_ID: return &_cbc_Mutex___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_MUTEX_ID, id)); break;
-	}
-	return NULL;
-}
-
 cbc_var cbc_Mutex___sysinit__(cbc_Mutex self){
-	self->__getclass__ = &_cbc_Mutex___getclass__;
+	self->__ctable__ = &_cbc_Mutex___ctable__;
 	return self;
 }
 
@@ -108,7 +104,11 @@ static cbc_var _cbc_Semaphore_type[3] = {
 	NULL
 };
 
-static struct cbc_Semaphore_Class_struct _cbc_Semaphore___class__ = {
+static struct{
+	cbc_Semaphore_Class_struct class;
+	cbc_var none;
+} _cbc_Semaphore___ctable__ = {
+	{
 	.__type__ = _cbc_Semaphore_type,
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
@@ -118,6 +118,7 @@ static struct cbc_Semaphore_Class_struct _cbc_Semaphore___class__ = {
 	.__cmp__ = &cbc_Object___cmp__,
 	.wait = &cbc_Semaphore_wait,
 	.release = &cbc_Semaphore_release
+	}, 0
 };
 
 cbc_var* cbc_Semaphore___type__ = _cbc_Semaphore_type;
@@ -142,17 +143,8 @@ cbc_var cbc_Semaphore___init__(cbc_Semaphore self, cbc_int n){
 	return self;
 }
 
-static cbc_var _cbc_Semaphore___getclass__(cbc_var id){
-	switch((size_t)id){
-		case CBC_SEMAPHORE_ID:
-		case CBC_OBJECT_ID: return &_cbc_Semaphore___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_SEMAPHORE_ID, id)); break;
-	}
-	return NULL;
-}
-
 cbc_var cbc_Semaphore___sysinit__(cbc_Semaphore self){
-	self->__getclass__ = &_cbc_Semaphore___getclass__;
+	self->__ctable__ = &_cbc_Semaphore___ctable__;
 	return self;
 }
 

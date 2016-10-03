@@ -57,8 +57,13 @@ static cbc_var _cbc_String_type[3] = {
 	NULL
 };
 
-static struct cbc_String_Class_struct _cbc_String___class__ = {
+static struct{
+	cbc_String_Class_struct __class__;
+	cbc_var none;
+} _cbc_String___ctable__ = {
+	{
 	.__type__ = _cbc_String_type,
+	.__size__ = sizeof(cbc_String_Class_struct),
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
 	.__callmethod__ = &cbc_Object___callmethod__,
@@ -105,6 +110,7 @@ static struct cbc_String_Class_struct _cbc_String___class__ = {
 	.lstripWhitespace = &cbc_String_lstripWhitespace,
 	.strip = &cbc_String_strip,
 	.stripWhitespace = &cbc_String_stripWhitespace
+	},0
 };
 
 cbc_var* cbc_String___type__ = _cbc_String_type;
@@ -129,18 +135,8 @@ cbc_var cbc_String___init__(cbc_String self, const char* c_str){
 	return self;
 }
 
-static cbc_var _cbc_String___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_STRING_ID:
-		case CBC_OBJECT_ID: return &_cbc_String___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_STRING_ID, id)); break;
-	}
-	return NULL;
-}
-
 cbc_var cbc_String___sysinit__(cbc_String self){
-	self->__getclass__ = &_cbc_String___getclass__;
+	self->__ctable__ = &_cbc_String___ctable__;
 	return self;
 }
 
@@ -176,7 +172,7 @@ cbc_var cbc_String_cmp(cbc_String self, cbc_String other){
 }
 
 cbc_var cbc_String_span(cbc_String self, cbc_String Chars){
-	cbc_String_Class cls = self->__getclass__(0);
+	cbc_String_Class cls = self->__ctable__;
 	int i;
 	for (i=0; i<self->_len; i++){
 		if (cls->findChar(Chars, *(self->_buf+i), 0)){
@@ -187,7 +183,7 @@ cbc_var cbc_String_span(cbc_String self, cbc_String Chars){
 }
 
 cbc_String cbc_String_pbrk(cbc_String self, cbc_String chars){
-	cbc_String_Class cls = self->__getclass__(0);
+	cbc_String_Class cls = self->__ctable__;
 	int i;
 	for (i=0; i<self->_len; i++){
 		if (cls->findChar(chars, *(self->_buf+i), 0)){
@@ -243,12 +239,12 @@ cbc_var cbc_String_find(cbc_String self, cbc_var search, cbc_var pos){
 }
 
 cbc_var cbc_String_exists(cbc_String self, cbc_var search){
-	cbc_String_Class cls = self->__getclass__(CBC_STRING_ID);
+	cbc_String_Class cls = self->__ctable__;
 	return cls->find(self, search, cbc_String_npos) < cbc_String_npos;
 }
 
 cbc_var cbc_String_charExists(cbc_String self, cbc_var search){
-	cbc_String_Class cls = self->__getclass__(CBC_STRING_ID);
+	cbc_String_Class cls = self->__ctable__;
 	return cls->findChar(self, search, cbc_String_npos) < cbc_String_npos;
 }
 
@@ -311,7 +307,7 @@ cbc_var cbc_String_startswith(cbc_String self, cbc_var str){
 }
 
 cbc_String cbc_String_expandTabs(cbc_String self, cbc_var tabsize){
-	cbc_String_Class cls = self->__getclass__(CBC_STRING_ID);
+	cbc_String_Class cls = self->__ctable__;
 	size_t tabs = cls->count(self, "\t");
 	size_t newSize = (self->_len-tabs)+(tabs*(size_t)tabsize);
 	cbc_char* newStr = CBC_NEW(cbc_char, newSize);
@@ -356,7 +352,7 @@ cbc_var cbc_String_isNumeric(cbc_String self){
 }
 
 cbc_var cbc_String_isHexadecimal(cbc_String self){
-	cbc_String_Class cls = self->__getclass__(CBC_STRING_ID);
+	cbc_String_Class cls = self->__ctable__;
 	size_t start = 0;
 	size_t end = self->_len;
 	if (cls->startswith(self, "0x"))
@@ -385,7 +381,7 @@ cbc_var cbc_String_isFloat(cbc_String self){
 }
 
 cbc_var cbc_String_isBinary(cbc_String self){
-	cbc_String_Class cls = self->__getclass__(CBC_STRING_ID);
+	cbc_String_Class cls = self->__ctable__;
 	size_t i = 0;
 	if (cls->startswith(self, "0b"))
 		i = 2;
@@ -493,7 +489,7 @@ cbc_String cbc_String_swapcase(cbc_String self){
 }
 
 cbc_String cbc_String_replace(cbc_String self, cbc_var oldstr, cbc_var newstr){
-	cbc_String_Class cls = self->__getclass__(CBC_STRING_ID);
+	cbc_String_Class cls = self->__ctable__;
 	size_t oslen = strlen(oldstr);
 	size_t nslen = strlen(newstr);
 	size_t occurences = cls->count(self, oldstr);

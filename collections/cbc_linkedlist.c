@@ -27,8 +27,13 @@ static cbc_var _cbc_LinkedList_type[4] = {
 	NULL
 };
 
-static struct cbc_List_Class_struct _cbc_LinkedList___class__ = {
+static struct{
+	cbc_List_Class_struct class;
+	cbc_var none;
+} _cbc_LinkedList___ctable__ = {
+	{
 	.__type__ = _cbc_LinkedList_type,
+	.__size__ = sizeof(cbc_List_Class_struct),
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
 	.__callmethod__ = &cbc_Object___callmethod__,
@@ -42,6 +47,7 @@ static struct cbc_List_Class_struct _cbc_LinkedList___class__ = {
 	.insert = &cbc_LinkedList_insert,
 	.contains = &cbc_LinkedList_contains,
 	.size = &cbc_LinkedList_size
+	}, 0
 };
 
 cbc_var* cbc_LinkedList___type__ = _cbc_LinkedList_type;
@@ -91,19 +97,8 @@ cbc_var cbc_LinkedList___init__(cbc_LinkedList self){
 	return self;
 }
 
-static cbc_var _cbc_LinkedList___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_LIST_ID:
-		case CBC_LINKED_LIST_ID:
-		case CBC_OBJECT_ID: return &_cbc_LinkedList___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_LINKED_LIST_ID, id)); break;
-	}
-	return NULL;
-}
-
 cbc_var cbc_LinkedList___sysinit__(cbc_LinkedList self){
-	self->__getclass__ = &_cbc_LinkedList___getclass__;
+	self->__ctable__ = &_cbc_LinkedList___ctable__;
 	return self;
 }
 
@@ -115,7 +110,7 @@ cbc_var cbc_LinkedList___usrinit__(cbc_LinkedList self){
 }
 
 cbc_var cbc_LinkedList_add(cbc_LinkedList self, cbc_var data){
-	cbc_LinkedList_Class cls = self->__getclass__(0);
+	cbc_LinkedList_Class cls = self->__ctable__;
 	return cls->insert(self, data, -1);
 }
 

@@ -26,8 +26,13 @@ static cbc_var _cbc_BinaryTree_type[3] = {
 	NULL
 };
 
-static struct cbc_BinaryTree_Class_struct _cbc_BinaryTree___class__ = {
+static struct{
+	cbc_BinaryTree_Class_struct class;
+	cbc_var none;
+} _cbc_BinaryTree___ctable__ = {
+	{
 	.__type__ = _cbc_BinaryTree_type,
+	.__size__ = sizeof(cbc_BinaryTree_Class_struct),
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
 	.__callmethod__ = &cbc_Object___callmethod__,
@@ -39,20 +44,11 @@ static struct cbc_BinaryTree_Class_struct _cbc_BinaryTree___class__ = {
 	.search = &cbc_BinaryTree_search,
 	.remove = &cbc_BinaryTree_remove,
 	.size = &cbc_BinaryTree_size
+	}, 0
 };
 
 cbc_var* cbc_BinaryTree___type__ = _cbc_BinaryTree_type;
 cbc_var cbc_BinaryTree___size__ = sizeof(cbc_BinaryTree_struct);
-
-static cbc_var _cbc_BinaryTree___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_BINARYTREE_ID:
-		case CBC_OBJECT_ID: return &_cbc_BinaryTree___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_BINARYTREE_ID, id)); break;
-	}
-	return NULL;
-}
 
 cbc_BinaryTree cbc_BinaryTree___new__(ssize_t (*cmpitem)(cbc_var, cbc_var),
 		ssize_t (*cmpid)(cbc_var, cbc_var)){
@@ -75,7 +71,7 @@ cbc_var cbc_BinaryTree___init__(cbc_BinaryTree self, ssize_t (*cmpitem)(cbc_var,
 }
 
 cbc_var cbc_BinaryTree___sysinit__(cbc_BinaryTree self){
-	self->__getclass__ = &_cbc_BinaryTree___getclass__;
+	self->__ctable__ = &_cbc_BinaryTree___ctable__;
 }
 
 cbc_var cbc_BinaryTree___usrinit__(cbc_BinaryTree self, ssize_t (*cmpitem)(cbc_var, cbc_var),
@@ -85,12 +81,31 @@ cbc_var cbc_BinaryTree___usrinit__(cbc_BinaryTree self, ssize_t (*cmpitem)(cbc_v
 	self->cmpid = cmpid;
 }
 
-cbc_var cbc_BinaryTree___end__(cbc_BinaryTree self){
+cbc_var _cbc_BinaryTree_destroy(cbc_BinaryTree self){
 	if (self != NULL){
-		cbc_BinaryTree___end__(self->left);
-		cbc_BinaryTree___end__(self->right);
+		_cbc_BinaryTree_destroy(self->left);
+		_cbc_BinaryTree_destroy(self->right);
 		cbc_dealloc(self);
 	}
+}
+
+cbc_var cbc_BinaryTree___end__(cbc_BinaryTree self){
+	if (self != NULL){
+		_cbc_BinaryTree_destroy(self->left);
+		_cbc_BinaryTree_destroy(self->right);
+	}
+}
+
+static void _cbc_BinaryTree_createChild(cbc_BinaryTree parent, cbc_BinaryTree* child, cbc_var item){
+	*child = cbc_alloc(cbc_BinaryTree___size__);
+	(*child)->__ctable__ = &_cbc_BinaryTree___ctable__;
+	(*child)->item = item;
+	(*child)->parent = parent;
+	(*child)->cmpitem = parent->cmpitem;
+	(*child)->cmpid = parent->cmpid;
+	(*child)->count = 1;
+	(*child)->left = NULL;
+	(*child)->right = NULL;
 }
 
 cbc_var cbc_BinaryTree_insert(cbc_BinaryTree self, cbc_var item){
@@ -110,20 +125,14 @@ cbc_var cbc_BinaryTree_insert(cbc_BinaryTree self, cbc_var item){
 			}
 			else if (cmp < 0){
 				if (self->right == NULL){
-					self->right = cbc_BinaryTree___new__(cmpitem, cmpid);
-					self->right->item = item;
-					self->right->count = 1;
-					self->right->parent = self;
+					_cbc_BinaryTree_createChild(self, &(self->right), item);
 					break;
 				}
 				else self = self->right;
 			}
 			else{
 				if (self->left == NULL){
-					self->left = cbc_BinaryTree___new__(cmpitem, cmpid);
-					self->left->item = item;
-					self->left->count = 1;
-					self->left->parent = self;
+					_cbc_BinaryTree_createChild(self, &(self->left), item);
 					break;
 				}
 				else self = self->left;

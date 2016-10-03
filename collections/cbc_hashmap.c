@@ -74,8 +74,13 @@ static cbc_var _cbc_HashMap_type[3] = {
 	NULL
 };
 
-static struct cbc_HashMap_Class_struct _cbc_HashMap___class__ = {
+static struct{
+	cbc_HashMap_Class_struct class;
+	cbc_var none;
+} _cbc_HashMap___ctable__ = {
+	{
 	.__type__ = _cbc_HashMap_type,
+	.__size__ = sizeof(cbc_HashMap_Class_struct),
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
 	.__callmethod__ = &cbc_Object___callmethod__,
@@ -85,20 +90,11 @@ static struct cbc_HashMap_Class_struct _cbc_HashMap___class__ = {
 	.get = &cbc_HashMap_get,
 	.insert = &cbc_HashMap_insert,
 	.remove = &cbc_HashMap_remove
+	}, 0
 };
 
 cbc_var* cbc_HashMap___type__ = _cbc_HashMap_type;
 cbc_var cbc_HashMap___size__ = sizeof(cbc_HashMap_struct);
-
-static cbc_var _cbc_HashMap___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_HASHMAP_ID:
-		case CBC_OBJECT_ID: return &_cbc_HashMap___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_HASHMAP_ID, id)); break;
-	}
-	return NULL;
-}
 
 cbc_HashMap cbc_HashMap___new__(){
 	cbc_HashMap self = (cbc_HashMap)cbc_alloc(cbc_HashMap___size__);
@@ -119,7 +115,7 @@ cbc_var cbc_HashMap___init__(cbc_HashMap self){
 }
 
 cbc_var cbc_HashMap___sysinit__(cbc_HashMap self){
-	self->__getclass__ = &_cbc_HashMap___getclass__;
+	self->__ctable__ = &_cbc_HashMap___ctable__;
 }
 
 cbc_var cbc_HashMap___usrinit__(cbc_HashMap self){

@@ -35,19 +35,12 @@
 	cbc_var (*contains)(void*, cbc_var data); \
 	cbc_var (*size)(void*);
 
-#define CBC_LIST_ATTRIBUTES CBC_OBJECT_ATTRIBUTES
-
 typedef struct cbc_List_Class_struct{
 	CBC_CLASS_HEADER
 	CBC_LIST_METHODS
 }cbc_List_Class_struct;
 
-typedef struct cbc_List_struct{
-	CBC_INSTANCE_HEADER
-	CBC_LIST_ATTRIBUTES
-}cbc_List_struct;
-
-typedef cbc_List_struct* cbc_List;
+typedef cbc_Object_struct* cbc_List;
 typedef cbc_List_Class_struct* cbc_List_Class;
 
 extern cbc_var* cbc_List___type__;

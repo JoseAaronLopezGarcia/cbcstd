@@ -28,7 +28,7 @@
 typedef struct cbc_ExceptionBuffer cbc_ExceptionBuffer;
 
 extern jmp_buf* cbc_registerExceptionBuffer();
-extern void cbc_unregisterExceptionBuffer();
+extern cbc_var cbc_unregisterExceptionBuffer(cbc_var ret);
 extern cbc_var cbc_raiseException(cbc_Exception exc);
 extern cbc_var cbc_unhandledException(cbc_Exception exc);
 extern cbc_Exception cbc_getRaisedException(cbc_Exception* e);

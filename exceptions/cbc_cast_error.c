@@ -27,14 +27,20 @@ static cbc_var _cbc_CastError_type[4] = {
 	NULL
 };
 
-static struct cbc_Exception_Class_struct _cbc_CastError___class__ = {
+static struct{
+	cbc_Exception_Class_struct class;
+	cbc_var none;
+} _cbc_CastError___ctable__ = {
+	{
 	.__type__ = _cbc_CastError_type,
+	.__size__ = sizeof(cbc_Exception_Class_struct),
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
 	.__callmethod__ = &cbc_Object___callmethod__,
 	.__end__ = &cbc_Exception___end__,
 	.__hash__ = &cbc_Object___hash__,
 	.__cmp__ = &cbc_Object___cmp__,
+	}, 0
 };
 
 cbc_var* cbc_CastError___type__ = _cbc_CastError_type;
@@ -59,18 +65,8 @@ cbc_var cbc_CastError___init__(cbc_CastError self, cbc_var id1, cbc_var id2){
 	return self;
 }
 
-static cbc_var _cbc_CastError___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_CAST_ERROR_ID:
-		case CBC_OBJECT_ID: return &_cbc_CastError___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_CAST_ERROR_ID, id)); break;
-	}
-	return NULL;
-}
-
 cbc_var cbc_CastError___sysinit__(cbc_CastError self){
-	self->__getclass__ = &_cbc_CastError___getclass__;
+	self->__ctable__ = &_cbc_CastError___ctable__;
 	return self;
 }
 

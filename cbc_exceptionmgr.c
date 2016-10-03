@@ -48,23 +48,24 @@ jmp_buf* cbc_registerExceptionBuffer(){
 	return &(buf->buffer);
 }
 
-void cbc_unregisterExceptionBuffer(){
+cbc_var cbc_unregisterExceptionBuffer(cbc_var ret){
 	cbc_ThreadBuffer* thread_buf = cbc_getCurrentThreadBuffer();
 	cbc_ExceptionBuffer* buf = thread_buf->exc_buf;
 	if (buf != NULL){
 		thread_buf->exc_buf = buf->next;
 		cbc_dealloc(buf);
 	}
+	return ret;
 }
 
 cbc_var cbc_raiseException(cbc_Exception exc){
 	cbc_ThreadBuffer* thread_buf = cbc_getCurrentThreadBuffer();
 	cbc_ExceptionBuffer* buf = thread_buf->exc_buf;
 	
-	if (!cbc_isinstanceof(exc, CBC_EXCEPTION_ID))
+	if (!cbc_instanceof(exc, cbc_Exception))
 		exc = cbc_InvalidException___new__(exc);
 	
-	if (cbc_isinstanceof(exc, CBC_SYSTEM_ERROR_ID)){
+	if (cbc_instanceof(exc, cbc_SystemError)){
 		fprintf(stderr, "\n\nInstance of SystemError raised (cannot be caught!)\n\n");
 		fprintf(stderr, "Thread ID: %zu\n", cbc_getThreadId());
 		fprintf(stderr, "Message:\n%s\n", exc->description->_buf);
@@ -87,13 +88,13 @@ cbc_var cbc_raiseException(cbc_Exception exc){
 }
 
 cbc_var cbc_unhandledException(cbc_Exception exc){
-	if (cbc_isinstanceof(exc, CBC_SYSTEM_EXIT_ID)){
+	if (cbc_instanceof(exc, cbc_SystemExit)){
 		exit(((cbc_SystemExit)exc)->exit_status);
 	}
 	else{
 		fprintf(stderr, "\n\nUnhandled exception caugth!\n\n");
 		fprintf(stderr, "Thread ID: %zu\n", cbc_getThreadId());
-		fprintf(stderr, "Exception ID: %zd\n", (size_t)(((cbc_Object_Class)(exc->__getclass__(0)))->__type__[0]));
+		fprintf(stderr, "Exception ID: %zd\n", (size_t)(((cbc_Class)(exc->__ctable__))->__type__[0]));
 		fprintf(stderr, "Message:\n%s\n", (cbc_String)(exc->description)->_buf);
 		cbc_printCurrentStackTrace();
 		exit(CBC_UNHANDLED_EXCEPTION);
@@ -130,7 +131,7 @@ static void handleSignal(int sig){
 }
 
 void _cbc_setupSignalHandler(){
-	size_t signals[6] = {SIGBUS, SIGSEGV, SIGILL, SIGFPE, SIGTERM, SIGABRT};
+	static size_t signals[6] = {SIGBUS, SIGSEGV, SIGILL, SIGFPE, SIGTERM, SIGABRT};
 	int i;for (i=0; i<6; i++)
 		signal(signals[i], &handleSignal);
 }

@@ -30,8 +30,13 @@ static cbc_var _cbc_DynamicArray_type[4] = {
 	NULL
 };
 
-static struct cbc_DynamicArray_Class_struct _cbc_DynamicArray___class__ = {
+static struct{
+	cbc_DynamicArray_Class_struct class;
+	cbc_var none;
+} _cbc_DynamicArray___ctable__ = {
+	{
 	.__type__ = _cbc_DynamicArray_type,
+	.__size__ = sizeof(cbc_DynamicArray_Class_struct),
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
 	.__callmethod__ = &cbc_Object___callmethod__,
@@ -47,13 +52,14 @@ static struct cbc_DynamicArray_Class_struct _cbc_DynamicArray___class__ = {
 	.size = &cbc_StaticArray_size,
 	.resize = &cbc_DynamicArray_resize,
 	.fit = &cbc_DynamicArray_fit
+	}, 0
 };
 
 cbc_var* cbc_DynamicArray___type__ = _cbc_DynamicArray_type;
-cbc_var cbc_DynamicArray___max__ = sizeof(cbc_DynamicArray_struct);
+cbc_var cbc_DynamicArray___size__ = sizeof(cbc_DynamicArray_struct);
 
 cbc_DynamicArray cbc_DynamicArray___new__(){
-	cbc_DynamicArray self = (cbc_DynamicArray)cbc_alloc(cbc_DynamicArray___max__);
+	cbc_DynamicArray self = (cbc_DynamicArray)cbc_alloc(cbc_DynamicArray___size__);
 	void* exception = NULL;
 	cbc_try{
 		cbc_DynamicArray___init__(self);
@@ -71,19 +77,8 @@ cbc_var cbc_DynamicArray___init__(cbc_DynamicArray self){
 	return self;
 }
 
-static cbc_var _cbc_DynamicArray___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_LIST_ID:
-		case CBC_DYNAMIC_ARRAY_ID:
-		case CBC_OBJECT_ID: return &_cbc_DynamicArray___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_DYNAMIC_ARRAY_ID, id)); break;
-	}
-	return NULL;
-}
-
 cbc_var cbc_DynamicArray___sysinit__(cbc_DynamicArray self){
-	self->__getclass__ = &_cbc_DynamicArray___getclass__;
+	self->__ctable__ = &_cbc_DynamicArray___ctable__;
 	return self;
 }
 
@@ -95,7 +90,7 @@ cbc_var cbc_DynamicArray___usrinit__(cbc_DynamicArray self){
 }
 
 cbc_var cbc_DynamicArray_checkSize(cbc_DynamicArray self){
-	cbc_DynamicArray_Class cls = self->__getclass__(0);
+	cbc_DynamicArray_Class cls = self->__ctable__;
 	if (self->_size >= self->_max)
 		cls->resize(self, self->_max+ARRAY_CHUNK_max);
 	return self->_max;
@@ -115,7 +110,7 @@ cbc_var cbc_DynamicArray_resize(cbc_DynamicArray self, cbc_var new_max){
 }
 
 cbc_var cbc_DynamicArray_fit(cbc_DynamicArray self){
-	cbc_DynamicArray_Class cls = self->__getclass__(0);
+	cbc_DynamicArray_Class cls = self->__ctable__;
 	cls->resize(self, self->_size);
 	return self->_max;
 }

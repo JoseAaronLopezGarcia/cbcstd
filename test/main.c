@@ -41,7 +41,7 @@ void exceptionTest(){
 void listTest(cbc_List l){
 	CBC_STACK_TRACE
 	printf("\n-------------- CbC list test --------------\n");
-	cbc_List_Class lcls = l->__getclass__(CBC_LIST_ID);
+	cbc_List_Class lcls = cbc_getClass(l, cbc_List);
 	
 	int i;
 	for (i=0; i<10; i++)

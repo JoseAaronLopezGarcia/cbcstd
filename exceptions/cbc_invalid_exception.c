@@ -27,14 +27,20 @@ static cbc_var _cbc_InvalidException_type[4] = {
 	NULL
 };
 
-static struct cbc_Exception_Class_struct _cbc_InvalidException___class__ = {
+static struct{
+	cbc_Exception_Class_struct class;
+	cbc_var none;
+} _cbc_InvalidException___ctable__ = {
+	{
 	.__type__ = _cbc_InvalidException_type,
+	.__size__ = sizeof(cbc_Exception_Class_struct),
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
 	.__callmethod__ = &cbc_Object___callmethod__,
 	.__end__ = &cbc_Exception___end__,
 	.__hash__ = &cbc_Object___hash__,
 	.__cmp__ = &cbc_Object___cmp__,
+	}, 0
 };
 
 cbc_var* cbc_InvalidException___type__ = _cbc_InvalidException_type;
@@ -59,18 +65,8 @@ cbc_var cbc_InvalidException___init__(cbc_InvalidException self, cbc_Object caus
 	return self;
 }
 
-static cbc_var _cbc_InvalidException___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_INVALID_EXCEPTION_ID:
-		case CBC_OBJECT_ID: return &_cbc_InvalidException___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_INVALID_EXCEPTION_ID, id)); break;
-	}
-	return NULL;
-}
-
 cbc_var cbc_InvalidException___sysinit__(cbc_InvalidException self){
-	self->__getclass__ = &_cbc_InvalidException___getclass__;
+	self->__ctable__ = &_cbc_InvalidException___ctable__;
 	return self;
 }
 
@@ -78,7 +74,7 @@ cbc_var cbc_InvalidException___usrinit__(cbc_InvalidException self, cbc_Object c
 	self->cause = cause;
 	char buf[128];
 	snprintf(buf, 128, "Trying to raise an instance of type %zd\n"
-		"Which is not compatible with cbc_Exception\n", ((cbc_Object_Class)(cause->__getclass__(0)))->__type__[0]);
+		"Which is not compatible with cbc_Exception\n", ((cbc_Object_Class)(cause->__ctable__))->__type__[0]);
 	cbc_Exception___usrinit__(self, buf);
 	return self;
 }

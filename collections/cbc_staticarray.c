@@ -27,8 +27,13 @@ static cbc_var _cbc_StaticArray_type[4] = {
 	NULL
 };
 
-static struct cbc_StaticArray_Class_struct _cbc_StaticArray___class__ = {
+static struct{
+	cbc_StaticArray_Class_struct class;
+	cbc_var none;
+} _cbc_StaticArray___ctable__ = {
+	{
 	.__type__ = _cbc_StaticArray_type,
+	.__size__ = sizeof(cbc_StaticArray_Class_struct),
 	.__getitem__ = &cbc_Object___getitem__,
 	.__setitem__ = &cbc_Object___setitem__,
 	.__callmethod__ = &cbc_Object___callmethod__,
@@ -39,9 +44,13 @@ static struct cbc_StaticArray_Class_struct _cbc_StaticArray___class__ = {
 	.set = &cbc_StaticArray_set,
 	.del = &cbc_StaticArray_del,
 	.add = &cbc_StaticArray_add,
+	.insert = &cbc_StaticArray_insert,
+	.contains = &cbc_StaticArray_contains,
+	.size = &cbc_StaticArray_size,
 	.checkSize = &cbc_StaticArray_checkSize,
 	.checkIndex = &cbc_StaticArray_checkIndex,
 	.size = &cbc_StaticArray_size
+	}, 0
 };
 
 cbc_var* cbc_StaticArray___type__ = _cbc_StaticArray_type;
@@ -66,19 +75,8 @@ cbc_var cbc_StaticArray___init__(cbc_StaticArray self, cbc_var max){
 	return self;
 }
 
-static cbc_var _cbc_StaticArray___getclass__(cbc_var id){
-	switch((size_t)id){
-		case 0:
-		case CBC_LIST_ID:
-		case CBC_STATIC_ARRAY_ID:
-		case CBC_OBJECT_ID: return &_cbc_StaticArray___class__;
-		default: cbc_throw(cbc_CastError___new__(CBC_STATIC_ARRAY_ID, id)); break;
-	}
-	return NULL;
-}
-
 cbc_var cbc_StaticArray___sysinit__(cbc_StaticArray self){
-	self->__getclass__ = &_cbc_StaticArray___getclass__;
+	self->__ctable__ = &_cbc_StaticArray___ctable__;
 	return self;
 }
 
@@ -94,27 +92,27 @@ cbc_var cbc_StaticArray_insert(cbc_StaticArray self, cbc_var data, cbc_var pos){
 }
 
 cbc_var cbc_StaticArray_add(cbc_StaticArray self, cbc_var data){
-	cbc_StaticArray_Class cls = self->__getclass__(0);
+	cbc_StaticArray_Class cls = self->__ctable__;
 	cls->checkSize(self);
 	self->_buf[self->_size++] = data;
 	return data;
 }
 
 cbc_var cbc_StaticArray_get(cbc_StaticArray self, cbc_var pos){
-	cbc_StaticArray_Class cls = self->__getclass__(0);
+	cbc_StaticArray_Class cls = self->__ctable__;
 	pos = cls->checkIndex(self, pos);
 	return self->_buf[(int)pos];
 }
 
 cbc_var cbc_StaticArray_set(cbc_StaticArray self, cbc_var pos, cbc_var data){
-	cbc_StaticArray_Class cls = self->__getclass__(0);
+	cbc_StaticArray_Class cls = self->__ctable__;
 	pos = cls->checkIndex(self, pos);
 	self->_buf[(int)pos] = data;
 	return data;
 }
 
 cbc_var cbc_StaticArray_del(cbc_StaticArray self, cbc_var pos){
-	cbc_StaticArray_Class cls = self->__getclass__(0);
+	cbc_StaticArray_Class cls = self->__ctable__;
 	
 	cbc_var ret = cls->get(self, pos);
 
